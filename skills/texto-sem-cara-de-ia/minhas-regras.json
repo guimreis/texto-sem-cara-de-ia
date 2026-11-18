@@ -1,0 +1,35 @@
+{
+  "_leia": "Suas regras. O detector usa este arquivo sozinho. Cada regra tem id, titulo, peso (1 a 3), regex e saida (o que fazer). Para desligar uma, ponha \"ativa\": false. Para criar, copie uma e troque o regex. Peça ao Claude: 'adiciona uma regra no meu minhas-regras.json para ...'.",
+  "regras": [
+    {
+      "id": "frase-feita",
+      "titulo": "Frase feita de texto gerado",
+      "peso": 2,
+      "regex": "(?i)\\b(vale ressaltar|[ée] importante (destacar|ressaltar|lembrar)|em suma|no cen[áa]rio atual|no mundo de hoje|nos dias de hoje|cada vez mais|sem sombra de d[úu]vida|espero que (esta mensagem )?(o|a|te|lhe)? ?encontre bem|fico [àa] disposi[çc][ãa]o para quaisquer d[úu]vidas)\\b",
+      "saida": "Corte a frase. Se ela some e o texto continua de pé, ela era enchimento."
+    },
+    {
+      "id": "palavra-de-ia",
+      "titulo": "Palavra que a IA adora",
+      "peso": 1,
+      "regex": "(?i)\\b(mergulh\\w+ (fundo|nesse|neste)|jornada|alavanc\\w+|potencializ\\w+|desbloque\\w+|robust[oa]s?|sinergia|ecossistema|transformador[ae]?s?|revolucion\\w+|incr[íi]ve(l|is)|fascinante)\\b",
+      "saida": "Troque pela palavra que você usaria falando. Uma vez passa; várias no mesmo texto denunciam."
+    },
+    {
+      "id": "emoji",
+      "titulo": "Emoji",
+      "peso": 2,
+      "ativa": false,
+      "regex": "[\\U0001F300-\\U0001FAFF\\u2600-\\u27bf]",
+      "saida": "Ligue esta regra se você não usa emoji em texto de trabalho."
+    },
+    {
+      "id": "a-gente",
+      "titulo": "\"a gente\" em texto formal",
+      "peso": 2,
+      "ativa": false,
+      "regex": "(?i)\\ba\\s+gente\\b",
+      "saida": "Ligue esta regra se, no seu texto formal, você escreve \"nós\"."
+    }
+  ]
+}
