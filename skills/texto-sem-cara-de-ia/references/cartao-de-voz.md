@@ -52,15 +52,35 @@ Mensagem de várias linhas continua nas linhas de baixo.
 | Travessão | Quase ninguém digita |
 | Expressões que repete | O vocabulário próprio da pessoa com aquele destinatário |
 | O outro lado | Como a pessoa ou o grupo escreve de volta: o tom da conversa |
+| O agora | Sua última mensagem ali, há quanto tempo, o que chegou depois, e se você cumprimenta de novo quando volta a falar no mesmo dia |
+| Balões | O rascunho dividido em blocos curtos, um envio por bloco, quando você manda assim |
 
 As últimas 50 mensagens são o padrão (`--ultimas` muda). Menos de 10 mensagens dão um
 palpite, e o cartão avisa.
+
+## O agora da conversa
+
+Quem acabou de falar num grupo e volta com "Oi, pessoal. Tudo bem?" denuncia que o
+texto foi escrito fora da conversa. O cartão mostra a sua última mensagem e o que
+chegou depois. Com menos de 6 horas, a conversa está aberta: o rascunho que começa
+cumprimentando leva peso 3, a menos que o seu histórico mostre que você cumprimenta
+de novo mesmo assim. Comece pelo assunto: "Aproveitando o tópico, ...".
+
+A hora de referência é a do computador. Conferindo uma conversa exportada há dias, use
+`--agora "dd/mm/aaaa hh:mm"`.
+
+## Balões
+
+Muita gente manda em blocos: três ou quatro mensagens curtas seguidas, em vez de um
+parágrafo. Quando o histórico mostra isso, a conferência termina com o rascunho
+dividido (`## Em balões`): uma linha por balão, e linha longa quebrada por frase.
+Cada balão é um envio.
 
 ## Como ler a conferência
 
 Cada diferença vem com peso:
 
-- **peso 3**: quase certo que soa estranho (emoji onde nunca houve, travessão,
+- **peso 3**: quase certo que soa estranho (cumprimento numa conversa aberta, emoji onde nunca houve, travessão,
   lista em mensagem, texto muito mais longo que o normal);
 - **peso 2**: foge do jeito de sempre ("você" para quem escreve "vc", abertura nova,
   parágrafos para quem manda balões);

@@ -5,7 +5,9 @@ soar como você falando com aquela pessoa ou aquele grupo.
 
 Ela lê o histórico da conversa, entende como você costuma escrever ali (como abre, se escreve
 "vc" ou "você", "pra" ou "para", o tamanho das mensagens, se usa emoji, como fecha) e confere o
-rascunho contra esse jeito. Depois procura as estruturas que denunciam texto gerado, como
+rascunho contra esse jeito. Olha também o agora da conversa: se você acabou de falar ali, ela
+não deixa a mensagem começar com "Oi, pessoal. Tudo bem?" de novo. E divide o texto em balões
+curtos, um envio por bloco, para quem manda mensagem assim. Depois procura as estruturas que denunciam texto gerado, como
 "não é X, é Y", "não apenas X, mas Y", três "sem" seguidos e o travessão.
 
 ## Um exemplo
@@ -72,7 +74,9 @@ ou
 Revisa esse texto e tira a cara de IA.
 ```
 
-O Claude mostra o seu cartão de voz numa linha, o texto e o que mudou. Nada é enviado: ele
+O Claude mostra o seu cartão de voz numa linha, o texto (dividido em balões, se você manda
+assim) e o que mudou. Exporte a conversa logo antes de pedir: ele precisa ver até a última
+mensagem para saber se a conversa ainda está aberta. Nada é enviado: ele
 escreve, confere e te mostra.
 
 ## Faça a sua versão

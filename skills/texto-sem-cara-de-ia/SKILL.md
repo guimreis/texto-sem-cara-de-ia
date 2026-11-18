@@ -1,6 +1,6 @@
 ---
 name: texto-sem-cara-de-ia
-description: Tira a cara de IA de qualquer texto, e principalmente faz a mensagem soar como a própria pessoa falando com aquela pessoa ou aquele grupo. Lê o histórico da conversa (WhatsApp exportado, e-mails, DMs), monta o cartão de voz de quem escreve (como abre, "vc" ou "você", "pra" ou "para", tamanho, emoji, como fecha) e confere o rascunho contra ele. Depois procura as estruturas sintáticas que denunciam texto gerado (antítese negada, "não apenas X, mas Y", negação tripla, aforismo de fechamento, travessão). Use ao escrever, reescrever ou revisar mensagem, resposta, e-mail, post ou página, e sempre que alguém disser "tira a cara de IA", "isso parece robô", "deixa com o meu jeito", "escreve como eu escrevo pra ele", "revisa esse texto" ou "humaniza".
+description: Tira a cara de IA de qualquer texto, e principalmente faz a mensagem soar como a própria pessoa falando com aquela pessoa ou aquele grupo. Lê o histórico da conversa (WhatsApp exportado, e-mails, DMs), monta o cartão de voz de quem escreve (como abre, "vc" ou "você", "pra" ou "para", tamanho, emoji, como fecha) e confere o rascunho contra ele. Olha também o agora da conversa: se a pessoa acabou de falar ali, não cumprimenta de novo; e propõe o texto em balões curtos, um envio por bloco, como se manda no celular. Depois procura as estruturas sintáticas que denunciam texto gerado (antítese negada, "não apenas X, mas Y", negação tripla, aforismo de fechamento, travessão). Use ao escrever, reescrever ou revisar mensagem, resposta, e-mail, post ou página, e sempre que alguém disser "tira a cara de IA", "isso parece robô", "deixa com o meu jeito", "escreve como eu escrevo pra ele", "revisa esse texto" ou "humaniza".
 ---
 
 # Texto sem cara de IA
@@ -54,20 +54,31 @@ repete. E mostra o outro lado: como a pessoa (ou o grupo) escreve de volta.
 Leia o cartão inteiro e as mensagens também. O script conta; o tom (carinho, pressa,
 ironia, o apelido que ela usa) você pega lendo.
 
+O cartão traz também **o agora da conversa**: quando foi a última mensagem dela ali, o
+que chegou depois e se ela costuma cumprimentar de novo quando volta a falar no mesmo
+dia. Leia a conversa até a última linha, sempre, logo antes de escrever: o histórico de
+ontem não mostra o que ela mandou há dez minutos.
+
 ### 3. Escrever dentro do cartão
 
-1. O que a pessoa ditou ou pediu é o **briefing**, não a mensagem. Pegue o conteúdo e
+1. **Conversa aberta não tem cumprimento.** Se ela falou ali há menos de 6 horas, nada de
+   "Oi, pessoal. Tudo bem?" de novo: comece pelo assunto, ligando ao que foi dito
+   ("Aproveitando o tópico, ...", "Sobre o que falei agora há pouco, ..."). Se alguém
+   escreveu depois dela, responda isso antes ou junto.
+2. O que a pessoa ditou ou pediu é o **briefing**, não a mensagem. Pegue o conteúdo e
    diga do jeito que ela diz para esse destinatário.
-2. O jeito dela com essa pessoa vence qualquer regra de estilo, inclusive deste
+3. O jeito dela com essa pessoa vence qualquer regra de estilo, inclusive deste
    arquivo. Se ela usa emoji com essa pessoa, o texto pode ter emoji.
-3. Chame o destinatário pelo nome ou apelido que ela já usa. Nunca invente apelido.
-4. No WhatsApp, mensagem é poucas linhas curtas, como se digita no celular. Se ela
-   manda vários balões curtos, sugira dividir em balões.
-5. Grupo é diferente de conversa a dois: veja como ela fala **naquele grupo**, que
+4. Chame o destinatário pelo nome ou apelido que ela já usa. Nunca invente apelido.
+5. No WhatsApp, mensagem é poucas linhas curtas, como se digita no celular. Quem manda
+   em blocos (vários balões seguidos, ou mensagens com quebra de linha) recebe o texto
+   já dividido em balões, um envio por bloco: o script propõe a divisão no fim da
+   conferência (`## Em balões`).
+6. Grupo é diferente de conversa a dois: veja como ela fala **naquele grupo**, que
    costuma ser mais curto e mais neutro do que no privado.
-6. Um assunto por mensagem. Sem markdown, sem lista com marcador, sem negrito, a
+7. Um assunto por mensagem. Sem markdown, sem lista com marcador, sem negrito, a
    menos que ela escreva assim nessa conversa.
-7. Link que a pessoa talvez não abra (estudo longo, site em inglês, conteúdo pago)
+8. Link que a pessoa talvez não abra (estudo longo, site em inglês, conteúdo pago)
    fica de fora; ofereça: "se quiser, te mando o estudo".
 
 ### 4. Conferir o rascunho contra o cartão
@@ -77,17 +88,22 @@ python3 scripts/cartao_de_voz.py conversa.txt --eu "Rafael" --texto "o rascunho"
 python3 scripts/cartao_de_voz.py conversa.txt --eu "Rafael" --rascunho rascunho.txt
 ```
 
-Sai a lista do que foge do jeito dela (abertura diferente, "você" para quem escreve
+Sai o agora da conversa e a lista do que foge do jeito dela (cumprimento repetido numa
+conversa aberta, abertura diferente, "você" para quem escreve
 "vc", longo demais, emoji onde ela nunca usa, parágrafos onde ela manda balões) e,
 logo abaixo, as estruturas de IA do detector. Corrija e rode de novo até sobrar só
-o que foi escolha consciente.
+o que foi escolha consciente. No fim vem o rascunho dividido em balões.
+
+Se a conferência é feita bem depois de exportar a conversa, passe `--agora "dd/mm/aaaa hh:mm"`
+com a hora da última mensagem que você leu, ou exporte de novo.
 
 ### 5. Mostrar
 
 Mostre, nesta ordem:
 
 1. o cartão numa linha (a linha que começa com `>`), para a pessoa ver de onde veio o tom;
-2. o texto final, com as quebras de linha reais;
+2. o texto final, com as quebras de linha reais e, para quem manda em blocos, já
+   dividido em balões numerados (cada balão é um envio);
 3. o que você mudou e por quê, em poucas linhas.
 
 **Nada sai no nome de ninguém sem o sim da pessoa naquele texto exato.** Se ela muda

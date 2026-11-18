@@ -15,6 +15,11 @@ Uso:
     cartao_de_voz.py CONVERSA.txt --eu "Seu Nome" --rascunho msg.txt
     cartao_de_voz.py CONVERSA.txt --eu "Seu Nome" --texto "a mensagem"
     cartao_de_voz.py CONVERSA.txt --eu "Seu Nome" --ultimas 60 --json
+    cartao_de_voz.py CONVERSA.txt --eu "Seu Nome" --texto "..." --agora "18/11/2026 15:00"
+
+Alem do jeito, o cartao olha o AGORA da conversa: quando foi a sua ultima mensagem e
+o que chegou depois dela. Quem acabou de falar nao abre com "Oi, pessoal. Tudo bem?"
+de novo. E propoe o rascunho em baloes, do jeito que se manda no celular.
 
 CONVERSA.txt pode ser:
   - a conversa exportada do WhatsApp (iPhone ou Android, sem midia);
@@ -246,6 +251,78 @@ def medir(baloes, turnos=None):
 
 
 # --------------------------------------------------------------------------
+# O agora da conversa
+# --------------------------------------------------------------------------
+
+RE_CUMPRIMENTO = re.compile(
+    r"^\W*(?:oi+|ola|opa|fala|e ai|eai|bom dia|boa tarde|boa noite|tudo bem|tudo bom|tudo certo|"
+    r"como vai|salve|hey|hello|hi)\b")
+RECENTE_MIN = 6 * 60  # menos de 6 horas desde a sua ultima: a conversa ainda esta aberta
+
+
+def cumprimenta(texto):
+    primeira = sem_acento(texto.strip().split("\n")[0].lower())
+    return bool(RE_CUMPRIMENTO.match(primeira))
+
+
+def tempo(minutos):
+    if minutos < 1:
+        return "agora mesmo"
+    if minutos < 60:
+        return "%d min" % minutos
+    if minutos < 48 * 60:
+        return "%d h" % round(minutos / 60)
+    return "%d dias" % round(minutos / 1440)
+
+
+def momento(msgs, eu, turnos, agora):
+    """Quando voce falou por ultimo, o que veio depois e se voce costuma cumprimentar de novo."""
+    minhas = [m for m in msgs if e_meu(m["autor"], eu) and m["quando"]]
+    if not minhas:
+        return None
+    ultima = minhas[-1]
+    minutos = max(0, (agora - ultima["quando"]).total_seconds() / 60)
+    depois = [m for m in msgs if m["quando"] and m["quando"] > ultima["quando"]
+              and not e_meu(m["autor"], eu)]
+    # nas suas falas que vieram menos de 6h depois de outra sua, voce cumprimentou?
+    com_data = [t for t in turnos if t[0]["quando"]]
+    retomadas = cumprimentos = 0
+    for anterior, atual in zip(com_data, com_data[1:]):
+        gap = (atual[0]["quando"] - anterior[-1]["quando"]).total_seconds() / 60
+        if gap < RECENTE_MIN:
+            retomadas += 1
+            cumprimentos += cumprimenta(atual[0]["texto"])
+    return {
+        "minutos": round(minutos),
+        "quando": ultima["quando"].strftime("%d/%m %H:%M"),
+        "sua_ultima": " ".join(ultima["texto"].split())[:140],
+        "depois_de_voce": [{"autor": m["autor"], "texto": " ".join(m["texto"].split())[:120]}
+                           for m in depois[-5:]],
+        "retomadas": retomadas,
+        "recumprimenta_pct": pct(cumprimentos, retomadas) if retomadas else None,
+    }
+
+
+RE_FRASES = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-Úa-zà-ú0-9@h])")
+
+
+def propor_baloes(texto, c):
+    """Quebra o rascunho em baloes: uma linha por balao, e linha longa por frase."""
+    limite = max(2 * c["palavras_mediana"], 15)
+    baloes = []
+    for linha in [l.strip() for l in texto.strip().splitlines() if l.strip()]:
+        if len(RE_PALAVRA.findall(linha)) <= limite:
+            baloes.append(linha)
+            continue
+        baloes.extend(f.strip() for f in RE_FRASES.split(linha) if f.strip())
+    return baloes
+
+
+def manda_em_baloes(c):
+    return c["baloes_por_fala"] >= 1.5 or c["quebra_de_linha_pct"] >= 25
+
+
+# --------------------------------------------------------------------------
 # Comparacao
 # --------------------------------------------------------------------------
 
@@ -261,11 +338,28 @@ def preferido(par):
     return None
 
 
-def diferencas(c, r, rascunho):
+def diferencas(c, agora, rascunho):
     """O que no rascunho foge do cartao. Cada item: (peso, frase)."""
     saida = []
     texto = rascunho.strip()
     baixo = texto.lower()
+
+    # cumprimento repetido: voce acabou de falar aqui
+    if agora and agora["minutos"] < RECENTE_MIN and cumprimenta(texto):
+        costume = agora["recumprimenta_pct"]
+        if costume is None or costume < 50:
+            saida.append((3, "Cumprimenta de novo, e você falou aqui há %s (\"%s\"). Continue a "
+                             "conversa: comece pelo assunto (\"Aproveitando...\", \"Sobre...\")%s."
+                          % (tempo(agora["minutos"]), agora["sua_ultima"][:70],
+                             "" if costume is None else
+                             "; quando volta a falar no mesmo dia, você cumprimenta em %d%% das vezes" % costume)))
+
+    # baloes
+    linhas = [l for l in texto.splitlines() if l.strip()]
+    if manda_em_baloes(c) and len(propor_baloes(texto, c)) > 1 and len(linhas) < len(propor_baloes(texto, c)):
+        saida.append((2, "Você costuma mandar em blocos curtos (%.1f balões por vez, quebra de linha em %d%%). "
+                         "Mande em balões separados, como no fim deste relatório."
+                      % (c["baloes_por_fala"], c["quebra_de_linha_pct"])))
 
     # tamanho
     total = sum(len(RE_PALAVRA.findall(b)) for b in re.split(r"\n\s*\n", texto))
@@ -293,7 +387,8 @@ def diferencas(c, r, rascunho):
     # abertura
     abre = cabeca(texto)
     suas = [a for a, _ in c["aberturas"]]
-    if abre and suas and c["falas"] >= 5 and abre not in suas:
+    aberta = agora and agora["minutos"] < RECENTE_MIN
+    if abre and suas and c["falas"] >= 5 and abre not in suas and not (aberta and not cumprimenta(texto)):
         saida.append((2, "Abre com \"%s\". Você costuma abrir com: %s."
                       % (abre, ", ".join('"%s"' % a for a in suas[:3]))))
 
@@ -357,6 +452,31 @@ def linha_unica(c):
     return "; ".join(partes)
 
 
+def imprime_agora(agora):
+    p = print
+    p()
+    p("## Agora nesta conversa")
+    p()
+    if not agora:
+        p("Sem data nas mensagens: não dá para saber quando você falou por último. Pergunte.")
+        return
+    p("Sua última mensagem aqui: %s, há %s: \"%s\"" % (agora["quando"], tempo(agora["minutos"]),
+                                                        agora["sua_ultima"]))
+    if agora["depois_de_voce"]:
+        p()
+        p("Depois dela, escreveram:")
+        for m in agora["depois_de_voce"]:
+            p("- %s: %s" % (m["autor"], m["texto"]))
+    else:
+        p("Ninguém escreveu depois dela.")
+    p()
+    if agora["minutos"] < RECENTE_MIN:
+        p("A conversa está aberta: não cumprimente de novo; continue de onde parou.")
+    if agora["recumprimenta_pct"] is not None:
+        p("Quando volta a falar em menos de 6 h, você cumprimenta em %d%% das vezes (%d casos)."
+          % (agora["recumprimenta_pct"], agora["retomadas"]))
+
+
 def imprime_cartao(nome, c, grupo, outros):
     p = print
     p("# Cartão de voz: %s nesta conversa" % nome)
@@ -404,8 +524,13 @@ def main():
     ap.add_argument("--ultimas", type=int, default=50, help="quantas mensagens suas usar (padrão 50)")
     ap.add_argument("--rascunho", help="arquivo com o rascunho a conferir")
     ap.add_argument("--texto", help="o rascunho direto, sem arquivo")
+    ap.add_argument("--agora", help="data e hora de referência, dd/mm/aaaa hh:mm (padrão: agora)")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
+    agora_dt = datetime.now()
+    if a.agora:
+        d, _, h = a.agora.partition(" ")
+        agora_dt = _data(d, h or "00:00") or agora_dt
 
     msgs = le_conversa(a.conversa)
     if msgs is None:
@@ -444,7 +569,9 @@ def main():
     if a.rascunho:
         with open(a.rascunho, encoding="utf-8") as fh:
             rascunho = fh.read()
-    difs = diferencas(cartao, None, rascunho) if rascunho else None
+    agora = momento(msgs, a.eu, turnos, agora_dt)
+    difs = diferencas(cartao, agora, rascunho) if rascunho else None
+    baloes_propostos = propor_baloes(rascunho, cartao) if rascunho else None
     estrutura = []
     if rascunho:
         try:
@@ -461,12 +588,15 @@ def main():
                           "outro_lado": outros and {k: outros[k] for k in
                                                     ("palavras_mediana", "emoji_pct", "risada_pct")},
                           "pessoas_do_outro_lado": grupo,
+                          "agora": agora,
+                          "baloes_propostos": baloes_propostos,
                           "diferencas": difs and [{"peso": p, "o_que": t} for p, t in difs],
                           "estrutura_de_ia": estrutura},
                          ensure_ascii=False, indent=1))
         return 1 if (difs or estrutura) else 0
 
     imprime_cartao(a.eu, cartao, grupo, outros)
+    imprime_agora(agora)
     if rascunho is not None:
         print()
         print("## O rascunho contra o cartão")
@@ -481,6 +611,12 @@ def main():
             print()
             for e in sorted(estrutura, key=lambda x: -x["peso"]):
                 print("- (peso %d) %s: \"...%s...\" %s" % (e["peso"], e["padrao"], e["trecho"], e["saida"]))
+        if len(baloes_propostos) > 1:
+            print()
+            print("## Em balões (um envio por bloco)")
+            for i, b in enumerate(baloes_propostos, 1):
+                print()
+                print("[%d] %s" % (i, b))
     return 1 if (difs or estrutura) else 0
 
 
