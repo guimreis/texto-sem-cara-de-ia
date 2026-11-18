@@ -74,11 +74,14 @@ ontem não mostra o que ela mandou há dez minutos.
    em blocos (vários balões seguidos, ou mensagens com quebra de linha) recebe o texto
    já dividido em balões, um envio por bloco: o script propõe a divisão no fim da
    conferência (`## Em balões`).
-6. Grupo é diferente de conversa a dois: veja como ela fala **naquele grupo**, que
+6. O jeito do outro lado conta também: quem escreve curto e carinhoso recebe curto e
+   carinhoso, e as abreviações dele ("td", "vc", "!!") podem entrar se ela já escreve
+   informal com ele.
+7. Grupo é diferente de conversa a dois: veja como ela fala **naquele grupo**, que
    costuma ser mais curto e mais neutro do que no privado.
-7. Um assunto por mensagem. Sem markdown, sem lista com marcador, sem negrito, a
+8. Um assunto por mensagem. Sem markdown, sem lista com marcador, sem negrito, a
    menos que ela escreva assim nessa conversa.
-8. Link que a pessoa talvez não abra (estudo longo, site em inglês, conteúdo pago)
+9. Link que a pessoa talvez não abra (estudo longo, site em inglês, conteúdo pago)
    fica de fora; ofereça: "se quiser, te mando o estudo".
 
 ### 4. Conferir o rascunho contra o cartão
