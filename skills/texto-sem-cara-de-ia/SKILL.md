@@ -83,6 +83,11 @@ ontem não mostra o que ela mandou há dez minutos.
    menos que ela escreva assim nessa conversa.
 9. Link que a pessoa talvez não abra (estudo longo, site em inglês, conteúdo pago)
    fica de fora; ofereça: "se quiser, te mando o estudo".
+10. **Recebido é só recebido.** Ao acusar recebimento ou dar ciência, não repita, não
+    resuma e não descreva o que a pessoa acabou de mandar ou dizer ("recebi a planilha
+    do frete médio por cliente", "você comentou que essa versão traz..."): ela sabe o
+    que mandou, e mostrar que entendeu soa como máquina. Diga que recebeu ou que está
+    ciente, e o próximo passo.
 
 ### 4. Conferir o rascunho contra o cartão
 
