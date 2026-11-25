@@ -114,6 +114,10 @@ ESTILO = [
     ("acento-faltando", "Palavra sem acento", 3,
      RE_ACENTO_FALTANDO,
      "Escreva a palavra acentuada."),
+    ("data-de-agenda", "Data com cara de agenda de robo", 3,
+     r"(?i)\b(?:segunda|ter[çc]a|quarta|quinta|sexta|s[áa]bado|domingo)(?:-feira)?\s*[\(,]\s*\d{1,2}/\d{1,2}\)?(?:\s*,?\s*(?:[àa]s|das)\s+\d)?",
+     "Diga o dia como se fala: 'amanha cedo', 'quinta as 9h', 'sexta no fim da tarde'. "
+     "Data com numero so quando passa de uma semana, e sem parenteses."),
     ("travessao-espacado", "Travessao cercado de espacos", 2,
      r"\s[\u2014\u2013]\s",
      "Reescreva a frase sem o travessao."),

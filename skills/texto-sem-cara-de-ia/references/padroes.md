@@ -194,6 +194,20 @@ quase ninguém digita esse caractere no teclado. Em mensagem, ele denuncia na ho
 
 ---
 
+## Data com cara de agenda de robô (peso 3)
+
+Dia da semana com a data entre parênteses ou depois de vírgula, no mesmo molde em
+cada opção, é formato de sistema de agenda. Ninguém fala assim numa conversa.
+
+> Tenho quinta (26/11) às 9h ou às 14h, ou sexta (27/11) às 16h30
+
+**Saída:** o dia como se fala, variando o jeito de cada opção. Data com número só
+quando passa de uma semana, e sem parênteses.
+
+> Amanhã consigo às 9h ou depois do almoço, às 14h. Ou sexta no fim da tarde, 16h30
+
+---
+
 ## Palavra sem acento (peso 3)
 
 "voce", "nao", "tambem" num texto que acentua todo o resto é erro de digitação, e o

@@ -89,6 +89,12 @@ ontem não mostra o que ela mandou há dez minutos.
     que mandou, e mostrar que entendeu soa como máquina. Diga que recebeu ou que está
     ciente, e o próximo passo.
 
+11. **Dia e hora como se fala.** Gente diz "amanhã cedo", "quinta às 9h", "sexta no
+    fim da tarde". Robô diz "quinta (26/11) às 9h" e repete o mesmo molde em cada
+    opção. Dentro da semana, o dia da semana basta; a data com número entra só quando
+    passa de uma semana, e sem parênteses ("quinta, dia 3"). Ao dar opções de horário,
+    varie o jeito de dizer cada uma, como quem olha a agenda e vai falando.
+
 ### 4. Conferir o rascunho contra o cartão
 
 ```bash
